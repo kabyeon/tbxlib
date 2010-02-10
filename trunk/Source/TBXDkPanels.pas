@@ -391,6 +391,7 @@ type
     FWrapping: TTextWrapping;
     FShowAccelChar: Boolean;
     FUpdating: Boolean;
+    FShowFocusRect: Boolean;
     procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
     procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     procedure CMTextChanged(var Message: TMessage); message CM_TEXTCHANGED;
@@ -398,6 +399,7 @@ type
     procedure SetAlignment(Value: TLeftRight);
     procedure SetMargins(Value: TTBXControlMargins);
     procedure SetShowAccelChar(Value: Boolean);
+    procedure SetShowFocusRect(const Value: Boolean);
     procedure SetWrapping(Value: TTextWrapping);
   protected
     procedure AdjustFont(AFont: TFont); virtual;
@@ -417,6 +419,7 @@ type
     property AutoSize default True;
     property PaintOptions default [cpoDoubleBuffered];
     property ShowAccelChar: Boolean read FShowAccelChar write SetShowAccelChar default True;
+    property ShowFocusRect: Boolean read FShowFocusRect write SetShowFocusRect default True;
     property Margins: TTBXControlMargins read FMargins write SetMargins;
     property Wrapping: TTextWrapping read FWrapping write SetWrapping default twNone;
   public
@@ -475,6 +478,7 @@ type
     property ParentShowHint;
     property PopupMenu;
     property ShowAccelChar;
+    property ShowFocusRect;
     property ShowHint;
     property Underline;
     property UnderlineColor;
@@ -566,6 +570,7 @@ type
     property ParentShowHint;
     property PopupMenu;
     property ShowAccelChar;
+    property ShowFocusRect;
     property ShowHint;
     property SmartFocus;
     property TabOrder;
@@ -728,6 +733,7 @@ type
     property RepeatDelay;
     property RepeatInterval;
     property ShowAccelChar;
+    property ShowFocusRect;
     property ShowHint;
     property SmartFocus;
     property TabOrder;
@@ -821,6 +827,7 @@ type
     property ParentShowHint;
     property PopupMenu;
     property ShowAccelChar;
+    property ShowFocusRect;
     property ShowHint;
     property SmartFocus;
     property State;
@@ -912,6 +919,7 @@ type
     property ParentShowHint;
     property PopupMenu;
     property ShowAccelChar;
+    property ShowFocusRect;
     property ShowHint;
     property SmartFocus;
     property TabOrder;
@@ -3488,6 +3496,7 @@ begin
   FMargins := TTBXControlMargins.Create;
   FMargins.OnChange := MarginsChangeHandler;
   FShowAccelChar := True;
+  FShowFocusRect := True;
   PaintOptions := [cpoDoubleBuffered];
   AutoSize := True;
   Width := 100;
@@ -3617,7 +3626,7 @@ begin
   begin
     R := ClientRect;
     ApplyMargins(R, Margins);
-    if Focused then DrawFocusRect2(Canvas, GetFocusRect(R));
+    if Focused and FShowFocusRect then DrawFocusRect2(Canvas, GetFocusRect(R));
     DrawStyle := DT_EXPANDTABS or WordWraps[Wrapping] or
       Alignments[GetRealAlignment(Self)] or ShowAccelChars[ShowAccelChar];
     Brush.Style := bsClear;
@@ -3648,6 +3657,15 @@ begin
   begin
     FShowAccelChar := Value;
     AdjustHeight;
+    Invalidate;
+  end;
+end;
+
+procedure TTBXTextObject.SetShowFocusRect(const Value: Boolean);
+begin
+  if FShowFocusRect <> Value then
+  begin
+    FShowFocusRect := Value;
     Invalidate;
   end;
 end;
@@ -4334,7 +4352,7 @@ begin
     CurrentTheme.PaintButton(Canvas, CR, ItemInfo);
   end
   else CurrentTheme.PaintButton(Canvas, CR, ItemInfo);
-  if Focused then DrawFocusRect2(Canvas, GetFocusRect(CR));
+  if Focused and FShowFocusRect then DrawFocusRect2(Canvas, GetFocusRect(CR));
   InflateRect(CR, -BorderSize, -BorderSize);
 
   if ShowArrow and not DropDownCombo then

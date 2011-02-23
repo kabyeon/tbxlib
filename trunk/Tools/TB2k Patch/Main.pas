@@ -147,6 +147,10 @@ begin
   CopyFile('tb2kdsgn_d14.dpk');
   CopyFile('tb2k_d14.res');
   CopyFile('tb2kdsgn_d14.res');
+  CopyFile('tb2k_d15.dpk');
+  CopyFile('tb2kdsgn_d15.dpk');
+  CopyFile('tb2k_d15.res');
+  CopyFile('tb2kdsgn_d15.res');
 
   Memo_Output.Lines.Add('');
   Memo_Output.Lines.Add('Finished.');

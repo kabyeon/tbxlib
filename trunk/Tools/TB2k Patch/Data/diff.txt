@@ -1,5 +1,5 @@
 --- TB2Common.pas	Wed Sep 17 14:46:30 2008
-+++ TB2Common.pas	Mon Feb 01 11:42:30 2010
++++ TB2Common.pas	Fri Oct 28 14:31:31 2011
 @@ -1250,42 +1250,84 @@
  procedure DrawRotatedText(const DC: HDC; AText: String; const ARect: TRect;
    const AFormat: Cardinal);
@@ -120,7 +120,7 @@
      Flags := Flags or SND_SYSTEM;
    PlaySound({$IFNDEF CLR}PChar{$ENDIF}(Alias), 0, Flags);
 --- TB2Dock.pas	Wed Sep 17 15:12:26 2008
-+++ TB2Dock.pas	Mon Feb 01 12:04:59 2010
++++ TB2Dock.pas	Fri Oct 28 14:31:31 2011
 @@ -79,9 +79,6 @@
      FDisableArrangeToolbars: Integer;  { Increment to disable ArrangeToolbars }
      FArrangeToolbarsNeeded: Boolean;
@@ -356,7 +356,7 @@
  end;
  
 --- TB2DsgnItemEditor.pas	Thu Sep 25 13:49:32 2008
-+++ TB2DsgnItemEditor.pas	Mon Feb 01 12:08:10 2010
++++ TB2DsgnItemEditor.pas	Fri Oct 28 14:50:28 2011
 @@ -157,6 +157,12 @@
  procedure TBRegisterItemClass(AClass: TTBCustomItemClass;
    const ACaption: String; ResInstance: HINST);
@@ -378,6 +378,15 @@
  
  {$IFNDEF JR_D6}
  function CreateSelectionList: TDesignerSelectionList;
+@@ -207,7 +214,7 @@
+   can't be unloaded. When a design-time package is uninstalled, it remains
+   loaded until the IDE is restarted. }
+ {$IFNDEF CLR}
+-procedure UnregisterModuleItemClasses(AModule: {$IFDEF JR_D5} LongWord {$ELSE} Integer {$ENDIF});
++procedure UnregisterModuleItemClasses(AModule: {$IFDEF JR_D16} NativeInt {$ELSE} {$IFDEF JR_D5} LongWord {$ELSE} Integer {$ENDIF} {$ENDIF});
+ var
+   I: Integer;
+   Info: TItemClassInfo;
 @@ -288,9 +295,19 @@
      second time, without reloading either of the two packages. As a result,
      the TBRegisterItemClass calls are repeated. To avoid doubled items on the
@@ -459,7 +468,7 @@
 +  FreeAndNil(EditFormHooks);
  end.
 --- TB2ExtItems.pas	Thu Apr 10 16:51:12 2008
-+++ TB2ExtItems.pas	Mon Feb 01 11:37:07 2010
++++ TB2ExtItems.pas	Fri Oct 28 14:31:31 2011
 @@ -43,6 +43,11 @@
    EditItemDefaultEditOptions = [];
    EditItemDefaultEditWidth = 64;
@@ -655,7 +664,7 @@
    { ensure the area underneath the edit control is repainted immediately }
    View.Window.Update;
 --- TB2Item.pas	Fri Sep 19 11:35:48 2008
-+++ TB2Item.pas	Mon Feb 01 11:51:38 2010
++++ TB2Item.pas	Fri Oct 28 14:31:31 2011
 @@ -42,6 +42,14 @@
    {$IFDEF CLR} TB2OleMarshal, {$ENDIF}
    StdCtrls, CommCtrl, Menus, ActnList, ImgList, TB2Anim;
@@ -1982,7 +1991,7 @@
  procedure TTBPopupMenu.SetImages(Value: TCustomImageList);
  begin
 --- TB2Reg.pas	Thu Sep 18 14:08:40 2008
-+++ TB2Reg.pas	Mon Feb 01 11:44:43 2010
++++ TB2Reg.pas	Fri Oct 28 14:31:31 2011
 @@ -36,6 +36,32 @@
    TB2Toolbar, TB2ToolWindow, TB2Dock, TB2Item, TB2ExtItems, TB2MRU, TB2MDI,
    TB2DsgnItemEditor;
@@ -2046,7 +2055,7 @@
  function TTBImageIndexPropertyEditor.GetAttributes: TPropertyAttributes;
  begin
 --- TB2Toolbar.pas	Mon Jun 23 13:05:48 2008
-+++ TB2Toolbar.pas	Mon Feb 01 12:01:57 2010
++++ TB2Toolbar.pas	Fri Oct 28 14:31:31 2011
 @@ -90,6 +90,7 @@
      function GetChevronHint: String;
      function GetImages: TCustomImageList;
@@ -2204,7 +2213,7 @@
  function TTBCustomToolbar.GetLinkSubitems: TTBCustomItem;
  begin
 --- TB2ToolWindow.pas	Wed Jan 05 20:56:50 2005
-+++ TB2ToolWindow.pas	Tue Jan 19 12:14:33 2010
++++ TB2ToolWindow.pas	Fri Oct 28 14:31:31 2011
 @@ -109,6 +109,11 @@
      property OnDockChanged;
      property OnDockChanging;
@@ -2250,3 +2259,21 @@
  end;
  
  procedure TTBToolWindow.GetBaseSize(var ASize: TPoint);
+--- TB2Ver.inc	Sat Sep 13 16:06:46 2008
++++ TB2Ver.inc	Fri Oct 28 14:37:49 2011
+@@ -32,6 +32,15 @@
+                       {$DEFINE JR_D11}  { then it must be at least Delphi 11 (2007) }
+                       {$IFNDEF VER190}  { if it's not .NET Delphi 11 (2007) }
+                         {$DEFINE JR_D12}  { then it must be at least Delphi 12 (2009) }
++                        {$IFNDEF VER200}  { if it's not Delphi 12 (2009) }
++                          {$DEFINE JR_D14}  { then it must be at least Delphi 14 (2010) }
++                          {$IFNDEF VER210}  { if it's not Delphi 14 (2010) }
++                            {$DEFINE JR_D15}  { then it must be at least Delphi 15 (XE) }
++                            {$IFNDEF VER220}  { if it's not Delphi 15 (XE) }
++                              {$DEFINE JR_D16}  { then it must be at least Delphi 16 (XE2) }
++                            {$ENDIF}
++                          {$ENDIF}
++                        {$ENDIF}
+                       {$ENDIF}
+                     {$ENDIF}
+                   {$ENDIF}
